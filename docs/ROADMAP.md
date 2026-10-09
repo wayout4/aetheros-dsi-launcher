@@ -1,28 +1,33 @@
-# AetherOS NitroLauncher + Starbound Courier roadmap
+# AetherOS NitroLauncher + Starbound Courier verification roadmap
 
-## Current confirmed baseline
-- BlocksDS build workflow is configured to compile `NitroLauncher.nds`.
-- CI runs `ci/validate_nds.py` to check title/game code, ARM9/ARM7 segment bounds, entry/load fields, and header CRC, then records SHA-256 as a build artifact.
-- Launcher source initializes FAT, lists up to 48 local `.nds` files, sorts names, pages with L/R, and checks a selected file's header.
-- The README/source explicitly says selection does not chainload. CI structural checks do not prove runtime boot.
+## Confirmed automated build status
 
-## Release gates (do not mark complete until evidenced)
-1. Green Actions run and downloadable `NitroLauncher-NDS` artifact.
-2. Downloaded ROM passes the repository validator and SHA-256 is recorded.
-3. Boot test in a DS emulator.
-4. Physical DSi test: boot, SD scan, navigation, corrupt-file handling, exit, and TWiLight Menu++ launch.
-5. Launch handoff test using a documented and licensed integration; verify save paths and return behavior.
-6. Release a versioned artifact with build commit, checksum, and test matrix.
+- The latest successful pre-package build is available through GitHub Actions and compiles both NitroLauncher and Starbound Courier with BlocksDS.
+- CI runs four validator regression cases and validates each generated ROM's title/game code, ARM9/ARM7 bounds, entry/load addresses, and header CRC.
+- CI records SHA-256 checksums.
+- The launcher supports up to 128 local entries, navigates folders, and inspects selected ROM headers.
+- A new workflow change assembles a full ZIP with both original ROMs, checksums, setup notes, and homebrew discovery catalogs. The run for that change must finish successfully before its artifact is available.
 
-## Seven-game setup
-See [HOMEBREW_CATALOG.md](HOMEBREW_CATALOG.md). The catalog is a download guide, not a bundle of copyrighted ROMs. Seven local files fit within the current 48-entry listing cap.
+## Explicitly unverified release gates
+
+1. Direct launch from NitroLauncher: not implemented. A supported TWiLight Menu++ / nds-bootstrap handoff must be integrated against a pinned, documented interface, not guessed.
+2. Additional homebrew: the 85-game catalog is a discovery list only. The repository does not bundle those third-party binaries. Their exact releases, licenses, data dependencies, and compatibility must be individually reviewed.
+3. Emulator test: not performed by the structural validator. A ROM that passes header checks is not thereby proven to boot.
+4. Physical DSi test: not performed. Hardware boot, SD access, navigation, and handoff need a real device test.
+5. Starbound Courier persistence: save/load code is present, but a gameplay-save-exit-restart session has not been verified on emulator or physical DSi.
+6. Release artifact: use the newest successful workflow run, and check its SHA-256 files after downloading.
+
+## Homebrew catalog
+
+- [Seven-game starter catalog](HOMEBREW_CATALOG.md)
+- [85 additional discovery candidates](EXPANDED_HOMEBREW_CATALOG.md)
+
+These links guide users to community catalog pages; they do not claim all candidates are currently downloadable, legally redistributable, or tested.
 
 ## Original game: AetherOS: Starbound Courier
-Build separately from the launcher to keep the ROMs independently testable. Start with a small native DS demo:
-- title screen and controls/tutorial
-- top-screen exploration and bottom-screen map/inventory
-- one planet, one delivery quest, dialogue, simple combat
-- save/load with versioned save data and safe defaults
-- test build with BlocksDS, structural validation, emulator boot, then physical DSi playtest
 
-Do not describe the game as complete until those milestones are implemented and tested.
+The current ROM is a small playable prototype: move around a map, collect three crystals, deliver them to the beacon, and save/load progress using `starbound.sav`. It is not a polished or complete game. Runtime checks for map collisions, mission completion, persistence, and corrupt save handling remain open.
+
+## Release principle
+
+Only claim a test has passed when there is a recorded result from that test. Structural ROM validation is useful, but it does not substitute for emulator or physical-console boot tests.
