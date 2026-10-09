@@ -3,11 +3,12 @@
 import pathlib, struct, sys
 
 def crc16(data, crc=0xFFFF):
+    # Nintendo DS BIOS swiCRC16: reflected CRC-16/IBM (poly 0xA001).
     for byte in data:
-        crc ^= byte << 8
+        crc ^= byte
         for _ in range(8):
-            crc = ((crc << 1) ^ 0x1021) & 0xFFFF if crc & 0x8000 else (crc << 1) & 0xFFFF
-    return crc
+            crc = ((crc >> 1) ^ 0xA001) if crc & 1 else (crc >> 1)
+    return crc & 0xFFFF
 
 def main():
     if len(sys.argv) != 2: raise SystemExit("usage: validate_nds.py ROM.nds")
