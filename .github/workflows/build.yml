@@ -1,0 +1,29 @@
+name: Build NitroLauncher
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with BlocksDS
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work skylyrac/blocksds:slim-latest make
+      - name: Validate ROM structure and header CRC
+        run: python3 ci/validate_nds.py NitroLauncher.nds
+      - name: Calculate SHA-256
+        run: sha256sum NitroLauncher.nds | tee NitroLauncher.nds.sha256
+      - name: Upload downloadable ROM
+        uses: actions/upload-artifact@v4
+        with:
+          name: NitroLauncher-NDS
+          path: |
+            NitroLauncher.nds
+            NitroLauncher.nds.sha256
+          if-no-files-found: error
+          retention-days: 30
