@@ -1,6 +1,6 @@
 # NitroLauncher: Seven-Game Homebrew Starter Catalog
 
-This is a curated, legal homebrew starter list for AetherOS NitroLauncher. The launcher currently lists local `.nds` files in its working folder (up to 48 entries); it does not download games and does not chainload a selected game. Use TWiLight Menu++ to start a listed game until a tested handoff is integrated.
+This is a curated, legal homebrew starter list for AetherOS NitroLauncher. The launcher currently lists local `.nds` files in its working folder (up to 128 entries); it does not download games and does not chainload a selected game. Use TWiLight Menu++ to start a listed game until a tested handoff is integrated.
 
 ## Recommended seven
 
@@ -25,7 +25,7 @@ Catalog listings and versions change. Open each game's page, review its license 
 5. Use Up/Down to select, L/R to page, A to inspect the header, and B to rescan.
 6. To actually run a selected game in this version, exit to TWiLight Menu++ and select that game there. The current launcher intentionally does not pretend that selection equals launching.
 
-The current source has a 48-file listing cap, so seven games fit comfortably. This is a local-file launcher, not a network downloader or a ROM pack.
+The current source has a 128-entry listing cap, so seven games fit comfortably. This is a local-file launcher, not a network downloader or a ROM pack.
 
 ## Best next technical milestone
 
