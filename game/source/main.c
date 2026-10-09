@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stddef.h>
 
 #define MAP_W 16
 #define MAP_H 10
