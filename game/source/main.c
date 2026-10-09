@@ -113,6 +113,7 @@ int main(void) {
         }
         if (k & KEY_A) {
             if (map[game.y][game.x] == 'C') {
+                bool collected = false;
                 for (unsigned i = 0; i < 3; i++) {
                     if (crystal_x[i] == game.x && crystal_y[i] == game.y &&
                         !(game.collected_mask & (1u << i))) {
@@ -120,11 +121,14 @@ int main(void) {
                         game.crystals++;
                         map[game.y][game.x] = '.';
                         bool saved = save_game();
-                        if (!saved) snprintf(message, sizeof(message), "Crystal collected, but SAVE FAILED.");
+                        snprintf(message, sizeof(message), saved ?
+                                 "Crystal secured (%u/3), saved." :
+                                 "Crystal collected, but SAVE FAILED.", game.crystals);
+                        collected = true;
                         break;
                     }
                 }
-                snprintf(message, sizeof(message), "Crystal secured (%u/3).", game.crystals);
+                if (!collected) snprintf(message, sizeof(message), "Crystal already collected.");
             } else if (map[game.y][game.x] == 'B') {
                 if (game.crystals == 3) {
                     game.delivered = 1;
