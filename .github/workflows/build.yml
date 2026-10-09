@@ -28,8 +28,8 @@ jobs:
       - name: Assemble complete AetherOS download package
         run: |
           mkdir -p dist/docs
-          cp NitroLauncher.nds NitroLauncher.nds.sha256 dist/
-          cp game/StarboundCourier.nds game/StarboundCourier.nds.sha256 dist/
+          cp NitroLauncher.nds game/StarboundCourier.nds dist/
+          (cd dist && sha256sum NitroLauncher.nds > NitroLauncher.nds.sha256 && sha256sum StarboundCourier.nds > StarboundCourier.nds.sha256)
           cp README.md dist/START-HERE.md
           cp docs/HOMEBREW_CATALOG.md docs/EXPANDED_HOMEBREW_CATALOG.md docs/ROADMAP.md dist/docs/
           (cd dist && sha256sum -c NitroLauncher.nds.sha256 StarboundCourier.nds.sha256)
