@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+BLOCKSDS ?= /opt/blocksds/core
+NAME := NitroLauncher
+GAME_TITLE := AetherOS Nitro
+GAME_SUBTITLE := DSi Homebrew Browser
+GAME_SUBTITLE2 := Safe Launcher
+LIBS := -lfat -lnds9 -lc
+include $(BLOCKSDS)/sys/default_makefiles/rom_arm9/Makefile
