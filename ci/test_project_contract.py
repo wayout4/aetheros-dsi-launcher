@@ -23,6 +23,21 @@ def main():
         require(token in launcher, f"launcher navigation control missing: {token}")
     require("does not chainload ROMs" in launcher,
             "launcher must not falsely imply selected ROMs are launched")
+
+    # Prevent scan_files() from overriding fatInitDefault() failure merely
+    # because the current working directory happens to be readable.
+    scan_match = re.search(r"static void scan_files\(void\) \{(.*?)\n\}", launcher, re.S)
+    require(scan_match is not None, "launcher scan_files() implementation missing")
+    scan_body = scan_match.group(1)
+    guard = scan_body.find("if (!storage_ok)")
+    opendir = scan_body.find('opendir(".")')
+    require(guard >= 0 and opendir >= 0 and guard < opendir,
+            "scan_files() must check FAT initialization before opening a directory")
+    require("storage_ok = true" not in scan_body,
+            "scan_files() must not manufacture a successful FAT initialization result")
+    require("if (!dir) { storage_ok = false; return; }" in scan_body,
+            "directory-open failure must mark storage unavailable")
+
     require("s.checksum != checksum(&s)" in game,
             "save loader must reject invalid save checksums")
     require("s.magic != SAVE_MAGIC" in game and "s.version != 1" in game,
@@ -39,6 +54,7 @@ def main():
     require("does not prove runtime boot" in readme,
             "README must distinguish structural checks from runtime boot")
     print("PASS: launcher controls/capacity and honest chainload status")
+    print("PASS: SD/FAT initialization failure cannot be masked by a readable directory")
     print("PASS: save/load integrity guards are present (source-level only)")
     print("PASS: expanded catalog has 85 candidates and compatibility disclaimer")
     print("PASS: runtime-test limitation is disclosed")
