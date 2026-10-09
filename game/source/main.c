@@ -9,11 +9,12 @@
 #define MAP_W 16
 #define MAP_H 10
 #define SAVE_PATH "starbound.sav"
+#define SAVE_MAGIC 0x53424331u
 
 typedef struct {
     uint32_t magic;
     uint16_t version;
-    uint8_t x, y, crystals, delivered;
+    uint8_t x, y, crystals, delivered, collected_mask;
     uint32_t checksum;
 } SaveData;
 
@@ -29,27 +30,34 @@ static const char *world[MAP_H] = {
     "#..............#",
     "################"
 };
+static const uint8_t crystal_x[3] = {8, 3, 7};
+static const uint8_t crystal_y[3] = {2, 4, 6};
 static char map[MAP_H][MAP_W + 1];
-static SaveData game = {0x53424331, 1, 1, 1, 0, 0, 0};
+static SaveData game = {SAVE_MAGIC, 1, 1, 1, 0, 0, 0, 0};
 static bool storage_ok;
 
 static uint32_t checksum(const SaveData *s) {
     const uint8_t *p = (const uint8_t *)s;
     uint32_t h = 2166136261u;
-    for (unsigned i = 0; i < sizeof(*s) - sizeof(s->checksum); i++)
+    for (unsigned i = 0; i < offsetof(SaveData, checksum); i++)
         h = (h ^ p[i]) * 16777619u;
     return h;
 }
 static void reset_map(void) {
     for (int y = 0; y < MAP_H; y++) memcpy(map[y], world[y], MAP_W + 1);
+    for (unsigned i = 0; i < 3; i++)
+        if (game.collected_mask & (1u << i)) map[crystal_y[i]][crystal_x[i]] = '.';
 }
 static void save_game(void) {
     if (!storage_ok) return;
+    game.magic = SAVE_MAGIC;
+    game.version = 1;
     game.checksum = checksum(&game);
     FILE *f = fopen(SAVE_PATH, "wb");
     if (!f) return;
-    fwrite(&game, sizeof(game), 1, f);
-    fclose(f);
+    bool ok = fwrite(&game, sizeof(game), 1, f) == 1;
+    if (fclose(f) != 0) ok = false;
+    (void)ok;
 }
 static bool load_game(void) {
     if (!storage_ok) return false;
@@ -58,9 +66,11 @@ static bool load_game(void) {
     if (!f) return false;
     size_t n = fread(&s, 1, sizeof(s), f);
     fclose(f);
-    if (n != sizeof(s) || s.magic != 0x53424331 || s.version != 1 ||
+    if (n != sizeof(s) || s.magic != SAVE_MAGIC || s.version != 1 ||
         s.checksum != checksum(&s) || s.x >= MAP_W || s.y >= MAP_H ||
-        s.crystals > 3 || s.delivered > 1) return false;
+        s.crystals > 3 || s.delivered > 1 || (s.collected_mask & ~7u)) return false;
+    unsigned bits = !!(s.collected_mask & 1) + !!(s.collected_mask & 2) + !!(s.collected_mask & 4);
+    if (bits != s.crystals) return false;
     game = s;
     return true;
 }
@@ -72,24 +82,21 @@ static void draw(const char *message) {
     printf("Crystals: %u/3    %s\n\n", game.crystals,
            game.delivered ? "DELIVERED!" : "IN FLIGHT");
     for (int y = 0; y < MAP_H; y++) {
-        for (int x = 0; x < MAP_W; x++) {
-            if (x == game.x && y == game.y) putchar('@');
-            else if (map[y][x] == 'C' && game.crystals == 3) putchar('.');
-            else putchar(map[y][x]);
-        }
+        for (int x = 0; x < MAP_W; x++)
+            putchar(x == game.x && y == game.y ? '@' : map[y][x]);
         putchar('\n');
     }
-    printf("\nD-pad: move  A: interact/save\nB: save  START: save & exit\n");
+    printf("\nD-pad: move  A: collect/deliver\nB: save  START: save & exit\n");
     printf("Legend @ you  C crystal  B beacon\n");
     if (message) printf("\n%s", message);
 }
 int main(void) {
     consoleDemoInit();
     storage_ok = fatInitDefault();
-    reset_map();
     bool loaded = load_game();
+    reset_map();
     char message[96];
-    if (loaded) snprintf(message, sizeof(message), "Save loaded from %s", SAVE_PATH);
+    if (loaded) snprintf(message, sizeof(message), "Save loaded; welcome back, courier.");
     else snprintf(message, sizeof(message), "%s. Find the crystals!",
                   storage_ok ? "New voyage" : "SD unavailable; progress is temporary");
     draw(message);
@@ -100,24 +107,31 @@ int main(void) {
         if (k & KEY_START) { save_game(); return 0; }
         if (k & KEY_B) {
             save_game();
-            draw(storage_ok ? "Progress saved." : "No SD: save unavailable.");
+            draw(storage_ok ? "Progress saved to starbound.sav." : "No SD: save unavailable.");
             continue;
         }
         if (k & KEY_A) {
-            if (map[game.y][game.x] == 'C' && game.crystals < 3) {
-                game.crystals++;
-                map[game.y][game.x] = '.';
-                save_game();
+            if (map[game.y][game.x] == 'C') {
+                for (unsigned i = 0; i < 3; i++) {
+                    if (crystal_x[i] == game.x && crystal_y[i] == game.y &&
+                        !(game.collected_mask & (1u << i))) {
+                        game.collected_mask |= (uint8_t)(1u << i);
+                        game.crystals++;
+                        map[game.y][game.x] = '.';
+                        save_game();
+                        break;
+                    }
+                }
                 snprintf(message, sizeof(message), "Crystal secured (%u/3).", game.crystals);
             } else if (map[game.y][game.x] == 'B') {
-                if (game.crystals >= 3) {
+                if (game.crystals == 3) {
                     game.delivered = 1;
                     save_game();
-                    snprintf(message, sizeof(message), "MISSION COMPLETE! Saved. Press START to exit.");
+                    snprintf(message, sizeof(message), "MISSION COMPLETE! Delivery saved.");
                 } else snprintf(message, sizeof(message), "Beacon needs 3 crystals. Keep exploring!");
             } else {
                 save_game();
-                snprintf(message, sizeof(message), "Ship log saved. Keep moving, courier.");
+                snprintf(message, sizeof(message), "Ship log saved.");
             }
             draw(message);
             continue;
