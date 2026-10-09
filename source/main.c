@@ -114,8 +114,9 @@ static bool validate_rom_file(const char *name, char *why, size_t why_len) {
         a7 < 0x200 || s7 == 0 || (uint64_t)a7 + s7 > (uint64_t)length) {
         snprintf(why, why_len, "ARM9/ARM7 ROM segment bounds invalid"); return false;
     }
-    if (!e9 || !e7 || !l9 || !l7 || e9 < l9 || e9 >= l9 + s9 ||
-        e7 < l7 || e7 >= l7 + s7) {
+    if (!e9 || !e7 || !l9 || !l7 || e9 < l9 ||
+        (uint64_t)e9 >= (uint64_t)l9 + s9 || e7 < l7 ||
+        (uint64_t)e7 >= (uint64_t)l7 + s7) {
         snprintf(why, why_len, "ARM entry/load addresses invalid"); return false;
     }
     uint16_t stored = (uint16_t)h[0x15E] | ((uint16_t)h[0x15F] << 8);
