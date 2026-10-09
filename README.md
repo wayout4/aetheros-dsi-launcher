@@ -1,6 +1,6 @@
 # AetherOS DSi NitroLauncher
 
-A Nintendo DS/DSi homebrew browser built with the BlocksDS SDK. It initializes FAT through libnds, lists `.nds` files in the launcher's current folder, and supports D-pad navigation and paging.
+A Nintendo DS/DSi homebrew browser built with the BlocksDS SDK. It initializes FAT through libnds, lists `.nds` files and subfolders, and supports D-pad navigation, paging, and folder traversal.
 
 ## Build and download
 
@@ -16,7 +16,7 @@ On a local BlocksDS installation, run `make`, then `python3 ci/validate_nds.py N
 1. Open the latest successful Actions run and download the `NitroLauncher-NDS` artifact.
 2. Unzip it and copy `NitroLauncher.nds` to your SD card.
 3. Start it through TWiLight Menu++.
-4. Use Up/Down to select, L/R to page, A for details, B to rescan, and Start to exit.
+4. Use Up/Down to select, L/R to page, A to open a folder or inspect a ROM, B to go to the parent folder, Y to rescan, and Start to exit.
 
 ## Seven-game homebrew setup
 
