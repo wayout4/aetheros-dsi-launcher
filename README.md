@@ -18,6 +18,12 @@ On a local BlocksDS installation, run `make`, then `python3 ci/validate_nds.py N
 3. Start it through TWiLight Menu++.
 4. Use Up/Down to select, L/R to page, A for details, B to rescan, and Start to exit.
 
+## Seven-game homebrew setup
+
+See [the seven-game starter catalog](docs/HOMEBREW_CATALOG.md) for legitimate download sources, game descriptions, and instructions for keeping all seven `.nds` files in the same folder. The current launcher supports up to 48 local `.nds` entries, so all seven fit. Required companion data folders must remain beside their game files.
+
+See [the verification and game-development roadmap](docs/ROADMAP.md) for release gates and the separate AetherOS: Starbound Courier original-game plan.
+
 ## Important limitation
 
 This version is a file-browser front end. Standard libnds does not provide a general safe API to chainload arbitrary NDS ROMs from an already-running homebrew application. Selecting a ROM displays instructions to return to TWiLight Menu++ and start it there; it does not pretend to launch it. A direct handoff would need a separately integrated and tested loader.
