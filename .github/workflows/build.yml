@@ -25,6 +25,44 @@ jobs:
         run: |
           sha256sum NitroLauncher.nds | tee NitroLauncher.nds.sha256
           sha256sum game/StarboundCourier.nds | tee game/StarboundCourier.nds.sha256
+      - name: Assemble complete AetherOS download package
+        run: |
+          mkdir -p dist/docs
+          cp NitroLauncher.nds NitroLauncher.nds.sha256 dist/
+          cp game/StarboundCourier.nds game/StarboundCourier.nds.sha256 dist/
+          cp README.md dist/START-HERE.md
+          cp docs/HOMEBREW_CATALOG.md docs/EXPANDED_HOMEBREW_CATALOG.md docs/ROADMAP.md dist/docs/
+          (cd dist && sha256sum -c NitroLauncher.nds.sha256 StarboundCourier.nds.sha256)
+          cat > dist/INSTALL.txt <<'EOF'
+          AETHEROS DSi PACKAGE
+          
+          Included:
+          - NitroLauncher.nds: browse local folders and inspect NDS headers.
+          - StarboundCourier.nds: original homebrew prototype.
+          - SHA-256 files for both ROMs.
+          - Documentation and homebrew discovery catalogs.
+          
+          Install:
+          1. Download and extract this package.
+          2. Copy NitroLauncher.nds and StarboundCourier.nds to your SD card.
+          3. Launch NitroLauncher.nds using TWiLight Menu++.
+          4. Use the included catalog links to obtain homebrew from the authors.
+          
+          Important:
+          - NitroLauncher is a browser/validator; it does NOT directly launch selected ROMs.
+          - Third-party games are not included in this package.
+          - Structural checks and header CRCs do not prove real DSi boot compatibility.
+          - Emulator and physical-console tests are not claimed by this build.
+          - Starbound Courier save/restart behavior needs runtime testing.
+          EOF
+          (cd dist && zip -qr ../AetherOS-DSI-Full-Package.zip .)
+      - name: Upload complete package with documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: AetherOS-DSI-Full-Package
+          path: AetherOS-DSI-Full-Package.zip
+          if-no-files-found: error
+          retention-days: 30
       - name: Upload downloadable DS executables
         uses: actions/upload-artifact@v4
         with:
