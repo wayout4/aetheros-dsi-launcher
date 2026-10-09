@@ -49,16 +49,16 @@ static void reset_map(void) {
     for (unsigned i = 0; i < 3; i++)
         if (game.collected_mask & (1u << i)) map[crystal_y[i]][crystal_x[i]] = '.';
 }
-static void save_game(void) {
-    if (!storage_ok) return;
+static bool save_game(void) {
+    if (!storage_ok) return false;
     game.magic = SAVE_MAGIC;
     game.version = 1;
     game.checksum = checksum(&game);
     FILE *f = fopen(SAVE_PATH, "wb");
-    if (!f) return;
+    if (!f) return false;
     bool ok = fwrite(&game, sizeof(game), 1, f) == 1;
     if (fclose(f) != 0) ok = false;
-    (void)ok;
+    return ok;
 }
 static bool load_game(void) {
     if (!storage_ok) return false;
@@ -105,10 +105,10 @@ int main(void) {
         swiWaitForVBlank();
         scanKeys();
         uint32_t k = keysDown();
-        if (k & KEY_START) { save_game(); return 0; }
+        if (k & KEY_START) { (void)save_game(); return 0; }
         if (k & KEY_B) {
-            save_game();
-            draw(storage_ok ? "Progress saved to starbound.sav." : "No SD: save unavailable.");
+            bool saved = save_game();
+            draw(saved ? "Progress saved to starbound.sav." : "SAVE FAILED: check SD and free space.");
             continue;
         }
         if (k & KEY_A) {
@@ -119,7 +119,8 @@ int main(void) {
                         game.collected_mask |= (uint8_t)(1u << i);
                         game.crystals++;
                         map[game.y][game.x] = '.';
-                        save_game();
+                        bool saved = save_game();
+                        if (!saved) snprintf(message, sizeof(message), "Crystal collected, but SAVE FAILED.");
                         break;
                     }
                 }
@@ -127,12 +128,12 @@ int main(void) {
             } else if (map[game.y][game.x] == 'B') {
                 if (game.crystals == 3) {
                     game.delivered = 1;
-                    save_game();
-                    snprintf(message, sizeof(message), "MISSION COMPLETE! Delivery saved.");
+                    if (save_game()) snprintf(message, sizeof(message), "MISSION COMPLETE! Delivery saved.");
+                    else snprintf(message, sizeof(message), "Delivery complete, but SAVE FAILED.");
                 } else snprintf(message, sizeof(message), "Beacon needs 3 crystals. Keep exploring!");
             } else {
-                save_game();
-                snprintf(message, sizeof(message), "Ship log saved.");
+                if (save_game()) snprintf(message, sizeof(message), "Ship log saved.");
+                else snprintf(message, sizeof(message), "SAVE FAILED: check SD and free space.");
             }
             draw(message);
             continue;
