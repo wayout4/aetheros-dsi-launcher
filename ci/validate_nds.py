@@ -31,7 +31,9 @@ def validate(path):
         if off < 0x200 or size <= 0 or off + size > len(d):
             raise ValueError(f"{name} segment out of bounds")
     for name, entry, load, size in (("ARM9", e9, l9, s9), ("ARM7", e7, l7, s7)):
-        if not entry or not load or entry < load or entry >= load + size:
+        # Reject wrapped 32-bit memory ranges before checking entry membership.
+        if (not entry or not load or load + size > 0x100000000
+                or entry < load or entry >= load + size):
             raise ValueError(f"{name} entry/load address invalid")
     stored = struct.unpack_from("<H", d, 0x15E)[0]
     computed = crc16(d[:0x15E])
