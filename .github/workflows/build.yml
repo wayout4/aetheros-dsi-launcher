@@ -13,6 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run validator regression tests
         run: python3 ci/test_validate_nds.py
+      - name: Run project contract regression tests
+        run: python3 ci/test_project_contract.py
       - name: Build NitroLauncher with BlocksDS
         run: docker run --rm -v "${{ github.workspace }}:/work" -w /work skylyrac/blocksds:slim-latest make
       - name: Build Starbound Courier with BlocksDS
