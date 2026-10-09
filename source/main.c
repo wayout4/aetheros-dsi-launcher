@@ -47,27 +47,27 @@ static void scan_files(void) {
 }
 static void draw(const char *notice) {
     consoleClear();
-    iprintf("\x1b[0;0HAetherOS NitroLauncher\n==============================\n");
-    iprintf("Folder: %.35s\n\n", folder);
+    printf("\x1b[0;0HAetherOS NitroLauncher\n==============================\n");
+    printf("Folder: %.35s\n\n", folder);
     if (!storage_ok) {
-        iprintf("SD/FAT storage unavailable.\n");
-        iprintf("Start from TWiLight Menu++ with\nreadable SD/flashcart storage.\n");
+        printf("SD/FAT storage unavailable.\n");
+        printf("Start from TWiLight Menu++ with\nreadable SD/flashcart storage.\n");
     } else if (!count) {
-        iprintf("No .nds files in this folder.\n");
-        iprintf("Put homebrew here or launch this\napp from the target folder.\n");
+        printf("No .nds files in this folder.\n");
+        printf("Put homebrew here or launch this\napp from the target folder.\n");
     } else {
-        iprintf("Found %u .nds file(s), max %u.\n", count, MAX_ROMS);
-        iprintf("UP/DOWN select  A details\nL/R page  B rescan\n\n");
+        printf("Found %u .nds file(s), max %u.\n", count, MAX_ROMS);
+        printf("UP/DOWN select  A details\nL/R page  B rescan\n\n");
         for (unsigned r = 0; r < ROWS && first+r < count; r++)
-            iprintf("%s%s\n", first+r == selected ? "> " : "  ", roms[first+r]);
+            printf("%s%s\n", first+r == selected ? "> " : "  ", roms[first+r]);
     }
-    if (notice) iprintf("\n%s", notice);
-    iprintf("\nSTART: exit to loader");
+    if (notice) printf("\n%s", notice);
+    printf("\nSTART: exit to loader");
 }
 int main(int argc, char **argv) {
     (void)argc; (void)argv;
     consoleDemoInit();
-    iprintf("Starting NitroLauncher...\n");
+    printf("Starting NitroLauncher...\n");
     storage_ok = fatInitDefault();
     scan_files(); draw(NULL);
     for (;;) {
@@ -81,10 +81,10 @@ int main(int argc, char **argv) {
         if (k & KEY_R) { selected+=ROWS; if (selected>=count) selected=count-1; first=selected; draw(NULL); }
         if (k & KEY_A) {
             consoleClear();
-            iprintf("Selected homebrew\n==============================\n%s\n\n", roms[selected]);
-            iprintf("This version browses files safely.\n");
-            iprintf("libnds does not provide general safe\nchainloading for arbitrary NDS ROMs.\n\n");
-            iprintf("Return to TWiLight Menu++ and select\nthe ROM there. Press B to go back.");
+            printf("Selected homebrew\n==============================\n%s\n\n", roms[selected]);
+            printf("This version browses files safely.\n");
+            printf("libnds does not provide general safe\nchainloading for arbitrary NDS ROMs.\n\n");
+            printf("Return to TWiLight Menu++ and select\nthe ROM there. Press B to go back.");
             for (;;) { swiWaitForVBlank(); scanKeys(); uint32_t d=keysDown(); if(d&KEY_START)return 0; if(d&KEY_B)break; }
             draw(NULL);
         }
