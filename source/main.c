@@ -9,7 +9,7 @@
 #include <strings.h>
 #include <sys/stat.h>
 
-#define MAX_ENTRIES 48
+#define MAX_ENTRIES 128
 #define NAME_LEN 128
 #define ROWS 12
 
