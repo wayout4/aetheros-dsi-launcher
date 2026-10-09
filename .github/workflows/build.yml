@@ -1,4 +1,4 @@
-name: Build NitroLauncher
+name: Build NitroLauncher and Starbound Courier
 on:
   push:
     branches: [main]
@@ -11,19 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build with BlocksDS
+      - name: Build NitroLauncher with BlocksDS
+        run: docker run --rm -v "${{ github.workspace }}:/work" -w /work skylyrac/blocksds:slim-latest make
+      - name: Build Starbound Courier with BlocksDS
+        run: docker run --rm -v "${{ github.workspace }}:/work" -w /work skylyrac/blocksds:slim-latest make -C game
+      - name: Validate both ROM structures and header CRCs
         run: |
-          docker run --rm -v "${{ github.workspace }}:/work" -w /work skylyrac/blocksds:slim-latest make
-      - name: Validate ROM structure and header CRC
-        run: python3 ci/validate_nds.py NitroLauncher.nds
-      - name: Calculate SHA-256
-        run: sha256sum NitroLauncher.nds | tee NitroLauncher.nds.sha256
-      - name: Upload downloadable ROM
+          python3 ci/validate_nds.py NitroLauncher.nds
+          python3 ci/validate_nds.py game/StarboundCourier.nds
+      - name: Calculate SHA-256 checksums
+        run: |
+          sha256sum NitroLauncher.nds | tee NitroLauncher.nds.sha256
+          sha256sum game/StarboundCourier.nds | tee game/StarboundCourier.nds.sha256
+      - name: Upload downloadable DS executables
         uses: actions/upload-artifact@v4
         with:
-          name: NitroLauncher-NDS
+          name: AetherOS-DS-ROMs
           path: |
             NitroLauncher.nds
             NitroLauncher.nds.sha256
+            game/StarboundCourier.nds
+            game/StarboundCourier.nds.sha256
           if-no-files-found: error
           retention-days: 30
