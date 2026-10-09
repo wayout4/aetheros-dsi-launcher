@@ -17,7 +17,7 @@ def main():
     catalog = (ROOT / "docs" / "EXPANDED_HOMEBREW_CATALOG.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
-    require(re.search(r"#define\\s+MAX_ENTRIES\\s+128\\b", launcher),
+    require(re.search(r"#define\s+MAX_ENTRIES\s+128\b", launcher),
             "launcher capacity must remain 128 entries")
     for token in ("KEY_UP", "KEY_DOWN", "KEY_L", "KEY_R", "KEY_B", "KEY_Y", "KEY_A"):
         require(token in launcher, f"launcher navigation control missing: {token}")
@@ -31,7 +31,7 @@ def main():
             "save path must write the complete save structure")
     require("fread(&s, 1, sizeof(s), f)" in game,
             "load path must read and validate the complete save structure")
-    numbered = re.findall(r"^\\d+\\. \\[.+?\\]\\(", catalog, flags=re.MULTILINE)
+    numbered = re.findall(r"^\d+\. \[.+?\]\(", catalog, flags=re.MULTILINE)
     require(len(numbered) == 85,
             f"expanded catalog must contain exactly 85 numbered candidates; found {len(numbered)}")
     require("not 85 runtime-tested games" in catalog,
