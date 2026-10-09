@@ -121,9 +121,8 @@ int main(void) {
                         game.crystals++;
                         map[game.y][game.x] = '.';
                         bool saved = save_game();
-                        snprintf(message, sizeof(message), saved ?
-                                 "Crystal secured (%u/3), saved." :
-                                 "Crystal collected, but SAVE FAILED.", game.crystals);
+                        if (saved) snprintf(message, sizeof(message), "Crystal secured (%u/3), saved.", game.crystals);
+                        else snprintf(message, sizeof(message), "Crystal collected, but SAVE FAILED.");
                         collected = true;
                         break;
                     }
