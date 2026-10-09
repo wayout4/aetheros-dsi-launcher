@@ -8,4 +8,4 @@ LIBS := -lnds9 -lc
 include $(BLOCKSDS)/sys/default_makefiles/rom_arm9/Makefile
 
 # Set real NDS header identity; -b above controls the banner text/icon.
-NDSTOOL_ARGS += -t "AETHEROS NIT" -g "AOSL" -m "01"
+NDSTOOL_ARGS += -g "AOSL" "01" "AETHEROS NIT"
