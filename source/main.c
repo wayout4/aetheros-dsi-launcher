@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #define MAX_ROMS 48
 #define NAME_LEN 128
 #define ROWS 12
