@@ -13,7 +13,7 @@ On a local BlocksDS installation, run `make`, then `python3 ci/validate_nds.py N
 
 ## Use on DSi
 
-1. Open the latest successful Actions run and download the `NitroLauncher-NDS` artifact.
+1. Open the latest successful Actions run and download the `AetherOS-DS-ROMs` artifact (it contains both `NitroLauncher.nds` and `StarboundCourier.nds`, plus SHA-256 files).
 2. Unzip it and copy `NitroLauncher.nds` to your SD card.
 3. Start it through TWiLight Menu++.
 4. Use Up/Down to select, L/R to page, A to open a folder or inspect a ROM, B to go to the parent folder, Y to rescan, and Start to exit.
