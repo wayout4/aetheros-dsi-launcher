@@ -56,7 +56,12 @@ def main():
     struct.pack_into("<I", bad_entry, 0x24, 0x02000200)
     struct.pack_into("<H", bad_entry, 0x15E, crc16(bad_entry[:0x15E]))
     run_case("entry point outside loaded ARM9 segment", bad_entry, False)
-    print("PASS: 4 validator regression cases")
+
+    wrapped_load = bytearray(valid)
+    struct.pack_into("<II", wrapped_load, 0x28, 0xFFFFFFF0, 0x100)
+    struct.pack_into("<H", wrapped_load, 0x15E, crc16(wrapped_load[:0x15E]))
+    run_case("wrapped ARM9 load-address range", wrapped_load, False)
+    print("PASS: 5 validator regression cases")
 
 
 if __name__ == "__main__":
