@@ -20,7 +20,7 @@ On a local BlocksDS installation, run `make`, then `python3 ci/validate_nds.py N
 
 ## Seven-game homebrew setup
 
-See [the seven-game starter catalog](docs/HOMEBREW_CATALOG.md) for legitimate download sources, game descriptions, and instructions for keeping all seven `.nds` files in the same folder. The current launcher supports up to 48 local `.nds` entries, so all seven fit. Required companion data folders must remain beside their game files.
+See [the seven-game starter catalog](docs/HOMEBREW_CATALOG.md) for setup notes and [the expanded 85-game discovery catalog](docs/EXPANDED_HOMEBREW_CATALOG.md) for additional homebrew candidates. These are discovery links, not a ROM bundle or a claim that every candidate has been runtime-tested. NitroLauncher can list up to 128 local entries; required companion data folders must remain at the paths specified by each game's author.
 
 See [the verification and game-development roadmap](docs/ROADMAP.md) for release gates and the separate AetherOS: Starbound Courier original-game plan.
 
