@@ -40,6 +40,12 @@ static bool is_root_path(const char *p) {
 }
 static void scan_files(void) {
     count = 0;
+    // Do not mistake a readable current directory for initialized SD/FAT.
+    // fatInitDefault() is the authority for whether removable storage is ready.
+    if (!storage_ok) {
+        folder[0] = '\0';
+        return;
+    }
     if (!getcwd(folder, sizeof(folder))) {
         const char *drive = fatGetDefaultDrive();
         snprintf(folder, sizeof(folder), "%s", drive ? drive : "SD");
@@ -58,7 +64,6 @@ static void scan_files(void) {
         count++;
     }
     closedir(dir);
-    storage_ok = true;
     // Directories first, then case-insensitive alphabetical order.
     for (unsigned i = 1; i < count; i++) {
         Entry key = entries[i];
