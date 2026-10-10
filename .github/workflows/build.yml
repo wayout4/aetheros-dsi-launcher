@@ -69,10 +69,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: AetherOS-DS-ROMs
+          # Upload from dist so both ROMs and checksum files have flat paths.
+          # This makes extraction and sha256sum -c straightforward for users.
           path: |
-            NitroLauncher.nds
-            NitroLauncher.nds.sha256
-            game/StarboundCourier.nds
-            game/StarboundCourier.nds.sha256
+            dist/NitroLauncher.nds
+            dist/NitroLauncher.nds.sha256
+            dist/StarboundCourier.nds
+            dist/StarboundCourier.nds.sha256
           if-no-files-found: error
           retention-days: 30
