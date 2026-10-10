@@ -25,9 +25,9 @@ def main():
             "launcher must not falsely imply selected ROMs are launched")
 
     # Keep the DS console's ANSI color sequences correctly escaped in C source.
-    for color in (r"\\x1b[36;1m", r"\\x1b[35m", r"\\x1b[32;1m", r"\\x1b[31;1m"):
+    for color in (r"\x1b[36;1m", r"\x1b[35m", r"\x1b[32;1m", r"\x1b[31;1m"):
         require(color in launcher, f"launcher color sequence missing: {color}")
-    require(r"\\\\x1b" not in launcher and r"\\\\n" not in launcher,
+    require(r"\\x1b" not in launcher and r"\\n" not in launcher,
             "launcher must not contain double-escaped ANSI/newline sequences")
 
     # Prevent scan_files() from overriding fatInitDefault() failure merely
