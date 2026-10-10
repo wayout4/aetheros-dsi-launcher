@@ -136,24 +136,25 @@ static bool validate_rom_file(const char *name, char *why, size_t why_len) {
 
 static void draw(const char *notice) {
     consoleClear();
-    printf("\x1b[0;0HAetherOS NitroLauncher\n==============================\n");
-    printf("Folder: %.38s\n\n", folder);
+    printf("\x1b[0;0H\x1b[36;1mAetherOS NitroLauncher\x1b[39m\n\x1b[35m==============================\x1b[39m\n");
+    printf("\x1b[36mFolder:\x1b[39m %.38s\n\n", folder);
     if (!storage_ok) {
-        printf("SD/FAT storage unavailable.\n");
+        printf("\x1b[31;1mSD/FAT storage unavailable.\x1b[39m\n");
         printf("Start from TWiLight Menu++ with\nreadable SD/flashcart storage.\n");
     } else if (!count) {
-        printf("No folders or .nds files here.\n");
+        printf("\x1b[33;1mNo folders or .nds files here.\x1b[39m\n");
         printf("Press B to go up; Y to rescan.\n");
     } else {
-        printf("%u entries (max %u).\n", count, MAX_ENTRIES);
-        printf("UP/DOWN select  A open/details\nL/R page  B parent  Y rescan\n\n");
+        printf("\x1b[32;1m%u entries\x1b[39m (max %u).\n", count, MAX_ENTRIES);
+        printf("\x1b[36mUP/DOWN select  A open/details\nL/R page  B parent  Y rescan\x1b[39m\n\n");
         for (unsigned r = 0; r < ROWS && first+r < count; r++) {
             Entry *e = &entries[first+r];
-            printf("%s%s%s\n", first+r == selected ? "> " : "  ",
-                   e->is_dir ? "[+] " : "    ", e->name);
+            printf("%s%s%s%s\n", first+r == selected ? "\\x1b[35;1m> " : "  ",
+                   e->is_dir ? "\\x1b[36m[+] \\x1b[39m" : "    ", e->name,
+                   first+r == selected ? "\\x1b[39m" : "");
         }
     }
-    if (notice) printf("\n%s", notice);
+    if (notice) printf("\n\\x1b[33;1m%s\\x1b[39m", notice);
     printf("\nSTART: exit to loader");
 }
 int main(int argc, char **argv) {
@@ -190,9 +191,10 @@ int main(int argc, char **argv) {
             consoleClear();
             char detail[112];
             bool valid = validate_rom_file(entry->name, detail, sizeof(detail));
-            printf("Selected homebrew\n==============================\n%s\n\n", entry->name);
-            printf("Header check: %s\n%s\n\n", valid ? "PASS" : "FAIL", detail);
-            printf("This launcher does not chainload ROMs.\n");
+            printf("\\x1b[36;1mSelected homebrew\\x1b[39m\n\\x1b[35m==============================\\x1b[39m\n%s\n\n", entry->name);
+            printf("Header check: ");
+            printf("%s%s\\x1b[39m\\n%s\\n\\n", valid ? "\\x1b[32;1m" : "\\x1b[31;1m", valid ? "PASS" : "FAIL", detail);
+            printf("\\x1b[33;1mThis launcher does not chainload ROMs.\\x1b[39m\\n");
             printf("Use TWiLight Menu++ to launch the game.\n\n");
             printf("Press B to return to the list.");
             for (;;) { swiWaitForVBlank(); scanKeys(); uint32_t d=keysDown(); if(d&KEY_START)return 0; if(d&KEY_B)break; }
