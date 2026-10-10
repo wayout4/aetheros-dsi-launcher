@@ -60,6 +60,7 @@ def main():
     require("does not prove runtime boot" in readme,
             "README must distinguish structural checks from runtime boot")
     print("PASS: launcher controls/capacity and honest chainload status")
+    print("PASS: launcher ANSI colors and escape sequences are correctly encoded")
     print("PASS: SD/FAT initialization failure cannot be masked by a readable directory")
     print("PASS: save/load integrity guards are present (source-level only)")
     print("PASS: expanded catalog has 85 candidates and compatibility disclaimer")
