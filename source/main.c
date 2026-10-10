@@ -193,8 +193,8 @@ int main(int argc, char **argv) {
             bool valid = validate_rom_file(entry->name, detail, sizeof(detail));
             printf("\x1b[36;1mSelected homebrew\x1b[39m\n\x1b[35m==============================\x1b[39m\n%s\n\n", entry->name);
             printf("Header check: ");
-            printf("%s%s\x1b[39m\\n%s\\n\\n", valid ? "\x1b[32;1m" : "\x1b[31;1m", valid ? "PASS" : "FAIL", detail);
-            printf("\x1b[33;1mThis launcher does not chainload ROMs.\x1b[39m\\n");
+            printf("%s%s\x1b[39m\n%s\n\n", valid ? "\x1b[32;1m" : "\x1b[31;1m", valid ? "PASS" : "FAIL", detail);
+            printf("\x1b[33;1mThis launcher does not chainload ROMs.\x1b[39m\n");
             printf("Use TWiLight Menu++ to launch the game.\n\n");
             printf("Press B to return to the list.");
             for (;;) { swiWaitForVBlank(); scanKeys(); uint32_t d=keysDown(); if(d&KEY_START)return 0; if(d&KEY_B)break; }
